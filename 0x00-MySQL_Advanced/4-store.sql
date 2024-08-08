@@ -3,15 +3,14 @@
 -- Quantity in the table items can be negative.
 
 -- Drop the trigger if it already exists to avoid conflicts
-DROP TRIGGER IF EXISTS after_insert_order;
-
--- Create the trigger
-CREATE TRIGGER after_insert_order
-AFTER INSERT ON orders  -- Trigger activates after an insert into orders
+DROP TRIGGER IF EXISTS reduce_quantity;
+DELIMITER $$
+CREATE TRIGGER reduce_quantity
+AFTER INSERT ON orders
 FOR EACH ROW
 BEGIN
-    -- Update the items table by subtracting the ordered quantity
     UPDATE items
-    SET quantity = quantity - NEW.number
-    WHERE name = NEW.item_name;
-END;
+        SET quantity = quantity - NEW.number
+        WHERE name = NEW.item_name;
+END $$
+DELIMITER ;
